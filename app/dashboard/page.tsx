@@ -1,4 +1,6 @@
 import { IndianRupee, Users, Gift, Receipt } from "lucide-react";
+import { getDashboardStats } from "@/services/dashboardService";
+import type { ReactNode } from "react";
 
 const recentPayments = [
   { name: "Amit", amount: 40 },
@@ -6,7 +8,9 @@ const recentPayments = [
   { name: "Rahul", amount: 25 },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const stats = await getDashboardStats();
+
   return (
     <main className="min-h-screen bg-[#09090B] text-white">
       <div className="mx-auto max-w-md px-6 py-10">
@@ -24,13 +28,13 @@ export default function DashboardPage() {
           <StatCard
             icon={<IndianRupee size={20} />}
             title="Revenue"
-            value="₹2,840"
+            value={`₹${stats.revenue}`}
           />
 
           <StatCard
             icon={<Receipt size={20} />}
             title="Transactions"
-            value="38"
+            value={`${stats.transactions}`}
           />
 
           <StatCard
@@ -78,7 +82,7 @@ function StatCard({
   title,
   value,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   value: string;
 }) {
