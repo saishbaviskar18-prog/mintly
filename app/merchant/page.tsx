@@ -20,7 +20,10 @@ export default async function MerchantPage() {
       <div className="mx-auto max-w-md px-6 py-12">
         <MerchantHeader name={merchant.name} />
 
-        <PaymentHero amount={merchant.paymentAmount} />
+        <PaymentHero
+  amount={merchant.paymentAmount}
+  merchantId={merchant.id}
+/>
 
         <MintBalanceCard
   mintBalance={merchant.mintBalance}

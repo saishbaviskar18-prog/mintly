@@ -1,15 +1,38 @@
 "use client";
 
 import { CreditCard, ChevronRight } from "lucide-react";
-import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import Button from "@/components/ui/Button";
+import { createTransaction } from "@/services/transactionService";
 
 type PaymentHeroProps = {
   amount: number;
+  merchantId: string;
 };
 
-export default function PaymentHero({ amount }: PaymentHeroProps) {
+export default function PaymentHero({
+  amount,
+  merchantId,
+}: PaymentHeroProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function handlePayment() {
+    try {
+      setLoading(true);
+
+      await createTransaction(merchantId, amount);
+
+      router.push("/payment-success");
+    } catch (error) {
+      console.error(error);
+      alert("Payment failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <section className="mt-14">
@@ -25,11 +48,16 @@ export default function PaymentHero({ amount }: PaymentHeroProps) {
 
       <Button
         className="mt-8 flex items-center justify-center gap-3"
-        onClick={() => router.push("/payment-success")}
+        onClick={handlePayment}
+        disabled={loading}
       >
         <CreditCard size={20} />
-        <span>Pay ₹{amount}</span>
-        <ChevronRight size={18} />
+
+        <span>
+          {loading ? "Processing..." : `Pay ₹${amount}`}
+        </span>
+
+        {!loading && <ChevronRight size={18} />}
       </Button>
     </section>
   );
