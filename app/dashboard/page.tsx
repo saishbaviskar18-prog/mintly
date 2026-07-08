@@ -1,15 +1,13 @@
-import { IndianRupee, Users, Gift, Receipt } from "lucide-react";
-import { getDashboardStats } from "@/services/dashboardService";
+import { IndianRupee, Users, Gift, Receipt, Clock3 } from "lucide-react";
+import {
+  getDashboardStats,
+  getRecentPayments,
+} from "@/services/dashboardService";
 import type { ReactNode } from "react";
-
-const recentPayments = [
-  { name: "Amit", amount: 40 },
-  { name: "Priya", amount: 60 },
-  { name: "Rahul", amount: 25 },
-];
 
 export default async function DashboardPage() {
   const stats = await getDashboardStats();
+  const payments = await getRecentPayments();
 
   return (
     <main className="min-h-screen bg-[#09090B] text-white">
@@ -57,17 +55,40 @@ export default async function DashboardPage() {
 
         <div className="mt-5 space-y-3">
 
-          {recentPayments.map((payment) => (
-            <div
-              key={payment.name}
-              className="flex justify-between rounded-2xl bg-[#18181B] p-4"
-            >
-              <span>{payment.name}</span>
+          {payments.map((payment) => (
 
-              <span className="font-semibold">
-                ₹{payment.amount}
-              </span>
+            <div
+              key={payment.id}
+              className="rounded-2xl bg-[#18181B] p-4"
+            >
+
+              <div className="flex items-center justify-between">
+
+                <span className="font-semibold">
+                  ₹{payment.amount}
+                </span>
+
+                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs text-emerald-400">
+                  Success
+                </span>
+
+              </div>
+
+              <div className="mt-3 flex items-center gap-2 text-sm text-zinc-500">
+
+                <Clock3 size={14} />
+
+                {payment.createdAt
+                  ? payment.createdAt.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "--"}
+
+              </div>
+
             </div>
+
           ))}
 
         </div>

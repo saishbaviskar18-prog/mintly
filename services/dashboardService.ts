@@ -1,9 +1,20 @@
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export type DashboardStats = {
   revenue: number;
   transactions: number;
+};
+
+export type RecentPayment = {
+  id: string;
+  amount: number;
+  createdAt: Date | null;
 };
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -13,7 +24,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
   snapshot.forEach((doc) => {
     const data = doc.data();
-
     revenue += Number(data.amount ?? 0);
   });
 
@@ -21,4 +31,19 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     revenue,
     transactions: snapshot.size,
   };
+}
+
+export async function getRecentPayments(): Promise<RecentPayment[]> {
+  const q = query(
+    collection(db, "transactions"),
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    amount: Number(doc.data().amount),
+    createdAt: doc.data().createdAt?.toDate() ?? null,
+  }));
 }

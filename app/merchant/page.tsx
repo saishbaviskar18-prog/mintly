@@ -23,6 +23,7 @@ export default async function MerchantPage() {
         <PaymentHero
   amount={merchant.paymentAmount}
   merchantId={merchant.id}
+  customerPhone="9876543210"
 />
 
         <MintBalanceCard

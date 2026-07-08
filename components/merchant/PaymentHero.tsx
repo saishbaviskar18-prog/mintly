@@ -6,15 +6,18 @@ import { useState } from "react";
 
 import Button from "@/components/ui/Button";
 import { createTransaction } from "@/services/transactionService";
+import { rewardCustomer } from "@/services/customerService";
 
 type PaymentHeroProps = {
   amount: number;
   merchantId: string;
+  customerPhone: string;
 };
 
 export default function PaymentHero({
   amount,
   merchantId,
+  customerPhone,
 }: PaymentHeroProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -24,6 +27,8 @@ export default function PaymentHero({
       setLoading(true);
 
       await createTransaction(merchantId, amount);
+
+      await rewardCustomer(customerPhone);
 
       router.push("/payment-success");
     } catch (error) {
