@@ -1,76 +1,92 @@
-"use client";
+import { Gift, Phone, User } from "lucide-react";
+import { getCustomerRewards } from "@/services/rewardService";
 
-import { useState } from "react";
-import Link from "next/link";
-import { sendOTP } from "@/services/auth";
+export default async function RewardsPage() {
+  const customer = await getCustomerRewards();
 
-export default function RewardsPage() {
-  const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
+  if (!customer) {
+    return (
+      <main className="min-h-screen bg-[#09090B] flex items-center justify-center text-white">
+        No customer found.
+      </main>
+    );
+  }
 
-  const handleContinue = async () => {
-    if (phone.length !== 10) {
-      alert("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      window.location.href = "/dashboard";
-
-      alert("OTP sent successfully!");
-
-    } catch (error: any) {
-      console.error(error);
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const progress =
+    (customer.visits / customer.rewardTarget) * 100;
 
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
-      <div className="w-full max-w-sm">
+    <main className="min-h-screen bg-[#09090B] text-white">
 
-        <Link
-          href="/"
-          className="text-yellow-500 hover:text-yellow-400"
-        >
-          ← Back
-        </Link>
+      <div className="mx-auto max-w-md px-6 py-10">
 
-        <h1 className="mt-8 text-4xl font-bold">
-          ⭐ My Rewards
-        </h1>
+        <div className="flex items-center gap-3">
 
-        <p className="mt-3 text-gray-400">
-          Enter your mobile number to continue.
-        </p>
+          <Gift className="text-emerald-500" />
 
-        <label className="mt-10 block text-sm text-gray-400">
-          Mobile Number
-        </label>
+          <h1 className="text-3xl font-bold">
+            My Rewards
+          </h1>
 
-        <input
-          type="tel"
-          placeholder="9876543210"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="mt-2 w-full rounded-2xl border border-yellow-500 bg-zinc-900 px-5 py-4 text-lg outline-none"
-        />
+        </div>
 
-        <button
-          onClick={handleContinue}
-          disabled={loading}
-          className="mt-8 w-full rounded-2xl bg-yellow-500 py-4 text-lg font-bold text-black transition hover:bg-yellow-400 disabled:opacity-60"
-        >
-          {loading ? "Sending OTP..." : "Continue"}
-        </button>
+        <div className="mt-10 rounded-[28px] bg-[#18181B] p-6">
 
-        <div id="recaptcha-container" className="mt-6"></div>
+          <p className="text-sm uppercase tracking-[0.2em] text-zinc-500">
+            Mint Balance
+          </p>
+
+          <h2 className="mt-3 text-5xl font-bold">
+            {customer.mintBalance}
+          </h2>
+
+          <div className="mt-8 h-2 rounded-full bg-zinc-800">
+
+            <div
+              className="h-full rounded-full bg-emerald-500"
+              style={{
+                width: `${progress}%`,
+              }}
+            />
+
+          </div>
+
+          <div className="mt-4 flex justify-between">
+
+            <span className="text-zinc-400">
+              {customer.visits} / {customer.rewardTarget} Visits
+            </span>
+
+            <span className="font-medium">
+              {customer.nextReward}
+            </span>
+
+          </div>
+
+        </div>
+
+        <div className="mt-8 rounded-[28px] bg-[#18181B] p-6">
+
+          <div className="flex items-center gap-3">
+
+            <User size={18} />
+
+            <span>{customer.name}</span>
+
+          </div>
+
+          <div className="mt-5 flex items-center gap-3">
+
+            <Phone size={18} />
+
+            <span>{customer.phone}</span>
+
+          </div>
+
+        </div>
 
       </div>
+
     </main>
   );
 }

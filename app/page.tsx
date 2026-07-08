@@ -1,35 +1,44 @@
 import Link from "next/link";
+import { CreditCard, Gift } from "lucide-react";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
-      <div className="w-full max-w-sm">
+    <main className="min-h-screen bg-[#09090B] text-white flex items-center justify-center px-6">
+      <div className="w-full max-w-md">
 
         <div className="text-center mb-14">
-          <div className="text-7xl mb-6">☕</div>
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-emerald-500/10">
+            <span className="text-5xl">🌿</span>
+          </div>
 
           <h1 className="text-5xl font-bold">
-            Project Tap
+            Mintly
           </h1>
 
-          <p className="mt-3 text-gray-400">
+          <p className="mt-3 text-zinc-400">
             Smart NFC Loyalty & Payment Platform
           </p>
         </div>
 
-        <Link
-          href="/pay"
-          className="block w-full bg-zinc-900 border border-yellow-500 rounded-2xl py-6 text-xl font-semibold text-center hover:bg-zinc-800 transition mb-5"
-        >
-          💳 Pay Now
-        </Link>
+        <div className="space-y-5">
 
-        <Link
-          href="/rewards"
-          className="block w-full bg-zinc-900 border border-yellow-500 rounded-2xl py-6 text-xl font-semibold text-center hover:bg-zinc-800 transition"
-        >
-          ⭐ My Rewards
-        </Link>
+          <Link
+            href="/merchant"
+            className="flex items-center justify-center gap-3 rounded-3xl bg-emerald-500 py-5 text-lg font-semibold text-black transition hover:opacity-90"
+          >
+            <CreditCard size={22} />
+            Pay Now
+          </Link>
+
+          <Link
+            href="/rewards"
+            className="flex items-center justify-center gap-3 rounded-3xl border border-zinc-700 bg-[#18181B] py-5 text-lg font-semibold transition hover:border-emerald-500"
+          >
+            <Gift size={22} />
+            My Rewards
+          </Link>
+
+        </div>
 
       </div>
     </main>
