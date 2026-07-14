@@ -7,25 +7,33 @@ import {
 import { auth } from "@/lib/firebase";
 
 let confirmationResult: ConfirmationResult | null = null;
+let recaptchaVerifier: RecaptchaVerifier | null = null;
 
-export const setupRecaptcha = () => {
+export const setupRecaptcha = async () => {
   if (typeof window === "undefined") return;
 
-  if (!(window as any).recaptchaVerifier) {
-    (window as any).recaptchaVerifier =
-      new RecaptchaVerifier(auth, "recaptcha-container", {
+  if (!recaptchaVerifier) {
+    recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
         size: "normal",
-      });
+      }
+    );
+
+    await recaptchaVerifier.render();
   }
+
+  return recaptchaVerifier;
 };
 
 export const sendOTP = async (phoneNumber: string) => {
-  setupRecaptcha();
+  const verifier = await setupRecaptcha();
 
   confirmationResult = await signInWithPhoneNumber(
     auth,
     phoneNumber,
-    (window as any).recaptchaVerifier
+    verifier
   );
 
   return confirmationResult;

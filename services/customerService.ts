@@ -1,12 +1,25 @@
 import {
   collection,
-  getDocs,
   query,
   where,
-  updateDoc,
+  getDocs,
   addDoc,
+  updateDoc,
+  increment,
+  doc,
 } from "firebase/firestore";
+
 import { db } from "@/lib/firebase";
+
+export type Customer = {
+  id: string;
+  name: string;
+  phone: string;
+  mintBalance: number;
+  visits: number;
+  rewardTarget: number;
+  nextReward: string;
+};
 
 export async function getCustomerByPhone(phone: string) {
   const q = query(
@@ -18,35 +31,48 @@ export async function getCustomerByPhone(phone: string) {
 
   if (snapshot.empty) return null;
 
-  return snapshot.docs[0];
-}
+  const customer = snapshot.docs[0];
 
-export async function rewardCustomer(phone: string) {
-  const customer = await getCustomerByPhone(phone);
-
-  if (!customer) return;
-
-  const data = customer.data();
-
-  const visits = Number(data.visits) + 1;
-  const mintBalance = Number(data.mintBalance) + 10;
-
-  await updateDoc(customer.ref, {
-    visits,
-    mintBalance,
-  });
+  return {
+    id: customer.id,
+    ...(customer.data() as Omit<Customer, "id">),
+  };
 }
 
 export async function createCustomer(
   name: string,
   phone: string
 ) {
-  await addDoc(collection(db, "customers"), {
+  const existing = await getCustomerByPhone(phone);
+
+  if (existing) return existing;
+
+  const ref = await addDoc(collection(db, "customers"), {
     name,
     phone,
-    visits: 1,
-    mintBalance: 10,
+    mintBalance: 0,
+    visits: 0,
     rewardTarget: 15,
     nextReward: "Free Tea",
+    createdAt: new Date(),
+  });
+
+  return {
+    id: ref.id,
+    name,
+    phone,
+    mintBalance: 0,
+    visits: 0,
+    rewardTarget: 15,
+    nextReward: "Free Tea",
+  };
+}
+
+export async function rewardCustomer(customerId: string) {
+  const customerRef = doc(db, "customers", customerId);
+
+  await updateDoc(customerRef, {
+    visits: increment(1),
+    mintBalance: increment(10),
   });
 }
