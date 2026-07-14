@@ -3,21 +3,23 @@
 import { CreditCard, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { auth } from "@/lib/firebase";
 
 import Button from "@/components/ui/Button";
 import { createTransaction } from "@/services/transactionService";
-import { rewardCustomer } from "@/services/customerService";
+import {
+  getCustomerByPhone,
+  rewardCustomer,
+} from "@/services/customerService";
 
 type PaymentHeroProps = {
   amount: number;
   merchantId: string;
-  customerPhone: string;
 };
 
 export default function PaymentHero({
   amount,
   merchantId,
-  customerPhone,
 }: PaymentHeroProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -26,9 +28,28 @@ export default function PaymentHero({
     try {
       setLoading(true);
 
-      await createTransaction(merchantId, amount);
+      const phone = auth.currentUser?.phoneNumber;
 
-      await rewardCustomer(customerPhone);
+      if (!phone) {
+        alert("Please login first.");
+        return;
+      }
+
+      const customer = await getCustomerByPhone(phone);
+
+      if (!customer) {
+        alert("Customer not found.");
+        return;
+      }
+
+      await createTransaction(
+        merchantId,
+        customer.id,
+        customer.phone,
+        amount
+      );
+
+      await rewardCustomer(customer.id);
 
       router.push("/payment-success");
     } catch (error) {

@@ -7,6 +7,7 @@ import {
   updateDoc,
   increment,
   doc,
+  getDoc,
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
@@ -71,8 +72,22 @@ export async function createCustomer(
 export async function rewardCustomer(customerId: string) {
   const customerRef = doc(db, "customers", customerId);
 
+  // Increase visits and Mint balance
   await updateDoc(customerRef, {
     visits: increment(1),
     mintBalance: increment(10),
   });
+
+  // Read the updated customer
+  const snapshot = await getDoc(customerRef);
+
+  if (!snapshot.exists()) return;
+
+  const data = snapshot.data();
+
+  if (data.visits >= data.rewardTarget) {
+    await updateDoc(customerRef, {
+      nextReward: "🎉 Reward Ready!",
+    });
+  }
 }

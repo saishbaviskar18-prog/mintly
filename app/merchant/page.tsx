@@ -21,17 +21,16 @@ export default async function MerchantPage() {
         <MerchantHeader name={merchant.name} />
 
         <PaymentHero
-  amount={merchant.paymentAmount}
-  merchantId={merchant.id}
-  customerPhone="9876543210"
-/>
+          amount={merchant.paymentAmount}
+          merchantId={merchant.id}
+        />
 
         <MintBalanceCard
-  mintBalance={merchant.mintBalance}
-  visits={merchant.visits}
-  rewardTarget={merchant.rewardTarget}
-  nextReward={merchant.nextReward}
-/>
+          mintBalance={merchant.mintBalance}
+          visits={merchant.visits}
+          rewardTarget={merchant.rewardTarget}
+          nextReward={merchant.nextReward}
+        />
 
         <RecentVisits />
       </div>
